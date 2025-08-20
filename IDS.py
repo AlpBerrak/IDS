@@ -48,3 +48,16 @@ def blockIP(ip):
     print(Fore.YELLOW + f"[INFO] Blocked IP {ip}" + Style.RESET_ALL)  
   except Exception as e:
     print(Fore.MAGENTA + f"[WARN] Could not block IP {ip}: {e}" + Style.RESET_ALL)
+    
+# Get geolocation of an IP using ipinfo.io API
+# Returns city and country if possible
+def getGeolocation(ip):
+  try: 
+    response = requests.get(f"https://ipinfo.io/{ip}/json")
+    data = response.json()
+    country = data.get("country", "Unknown")
+    city = data.get("city", "Unknown")
+    return f"{city}, {country}"
+  except:
+    return "Unknown"
+      
