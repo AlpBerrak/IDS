@@ -61,3 +61,21 @@ def getGeolocation(ip):
   except:
     return "Unknown"
       
+  
+# Detection Functions
+
+# Detect SYN flood attacks
+# Counts SYN packets per IP withing time window seconds
+# if threshold exceeded, log alert and block IP
+def detectSynFlood(pkt):
+  if pkt.haslayer(TCP) and pkt[TCP].flags == 'S':
+    srcIP = pkt[IP].src
+    now = time.time()
+    synCounter.setdefault(srcIP, []).append(now)
+    # remove timestamps older than timewindow
+    portScanCounter[srcIP] = [t for t in synCounter[srcIP] if now - t <= TIME_WINDOW]
+    if len(synCounter[srcIP]) > SYN_THRESHOLD:
+      location = getGeolocation(srcIP)
+      logAlert(f"SYN flood detected from {srcIP} ({location})")
+      blockIP(srcIP)
+      
