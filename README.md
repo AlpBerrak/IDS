@@ -16,25 +16,25 @@ This tool is useful for cybersecurity professionals, network administrators, and
 - Easy to customize thresholds and time windows for different attack types.
 
 ## Defintions of Attacks:
-1. SYN Flood
+### SYN Flood
 
 - A type of Denial-of-Service (DoS) attack.
 
 - The attacker sends many TCP SYN packets to a target server without completing the handshake, exhausting server resources.
 
-2. UDP Flood
+### UDP Flood
 
 - A DoS attack where the attacker sends a large number of UDP packets to random or specific ports.
 
 - The target may crash or become unresponsive due to the high packet volume.
 
-3. ICMP Flood (Ping Flood)
+### ICMP Flood (Ping Flood)
 
 - A DoS attack using ICMP Echo Request (ping) packets.
 
 - Overwhelms the target system’s network resources.
 
-4. Port Scanning
+### Port Scanning
 
 - A reconnaissance technique used to identify open ports and services on a system.
 
