@@ -117,3 +117,17 @@ def detectPortScan(pkt):
       location = getGeolocation(srcIP)
       logAlert(f"Port scan detected from {srcIP} ({location})")
       blockIP(srcIP) 
+      
+      
+      
+# Call back function for sniffed packets
+# called for every packet sniffed from the network
+# checks for all types of attacks
+
+def packetCallback(pkt):
+  if pkt.haslayer(IP):
+    detectSynFlood(pkt)
+    detectUdpFlood(pkt)
+    detectIcmpFlood(pkt)
+    detectPortScan(pkt)
+    
