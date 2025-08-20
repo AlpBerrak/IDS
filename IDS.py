@@ -17,4 +17,12 @@ TIME_WINDOW = 10         # Time window in seconds for counting packets
 ALERT_LOG_FILE = "ids_alerts.log"  # File to log alerts
 
 
+# Data structures to track sus activity
+synCounter = {} # store timestamps of SYN packets per IP
+udpCounter ={} # sotres timeseaps of UDP packets per ip
+icmpCounter = {} #stores timestamps of ICMP packets per ip
+portScanCounter = {} # stores port access times per ip
+blockedIPS = set() # set to track already blocked IPS
+
+
 
