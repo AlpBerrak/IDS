@@ -1,6 +1,6 @@
 # Terminal IDS
 ## About:
-TerminalIDS is an advanced Python-based Intrusion Detection System (IDS) that monitors network traffic in real-time. It detects multiple types of network attacks including SYN floods, UDP floods, ICMP floods, and port scanning. The IDS logs alerts, shows color-coded messages in the terminal, automatically blocks malicious IPs using iptables, and can provide geolocation of attackers using the ipinfo.io API.
+Terminal IDS is an advanced Python-based Intrusion Detection System (IDS) that monitors network traffic in real-time. It detects multiple types of network attacks including SYN floods, UDP floods, ICMP floods, and port scanning. The IDS logs alerts, shows color-coded messages in the terminal, automatically blocks malicious IPs using iptables, and can provide geolocation of attackers using the ipinfo.io API.
 
 This tool is useful for cybersecurity professionals, network administrators, and students to understand network threats and experiment with real-time detection.
 
