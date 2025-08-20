@@ -73,7 +73,7 @@ def detectSynFlood(pkt):
     now = time.time()
     synCounter.setdefault(srcIP, []).append(now)
     # remove timestamps older than timewindow
-    portScanCounter[srcIP] = [t for t in synCounter[srcIP] if now - t <= TIME_WINDOW]
+    synCounter[srcIP] = [t for t in synCounter[srcIP] if now - t <= TIME_WINDOW]
     if len(synCounter[srcIP]) > SYN_THRESHOLD:
       location = getGeolocation(srcIP)
       logAlert(f"SYN flood detected from {srcIP} ({location})")
@@ -111,6 +111,8 @@ def detectPortScan(pkt):
     srcIP = pkt[IP].src
     dstPort = pkt[TCP].dport if pkt.haslayer(TCP) else pkt[UDP].dport
     now = time.time()
+    portScanCounter.setdefault(srcIP, {})
+    portScanCounter[srcIP][dstPort] = now   
     # track the last access time per port
     portScanCounter[srcIP] = {port: t for port, t in portScanCounter[srcIP].items() if now - t <= TIME_WINDOW}
     if len(portScanCounter[srcIP])> PORT_SCAN_THRESHOLD:
@@ -137,7 +139,7 @@ def main():
   print("Monitoring network traffic... Press Ctrl+C to stop.")
   try:
     # sniff captures packets and calls packet callback for each
-    sniff(prn=packetCallback, store=False)
+    sniff(iface="lo", prn=packetCallback, store=False)
   except KeyboardInterrupt:
     print(Fore.CYAN + "\n[INFO] IDS Stopped"+ Style.RESET_ALL)
 
