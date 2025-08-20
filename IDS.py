@@ -131,3 +131,17 @@ def packetCallback(pkt):
     detectIcmpFlood(pkt)
     detectPortScan(pkt)
     
+# Main IDS LOOP
+def main():
+  print(Fore.GREEN + "=== Terminal IDS Started ==="+ Style.RESET_ALL)
+  print("Monitoring network traffic... Press Ctrl+C to stop.")
+  try:
+    # sniff captures packets and calls packet callback for each
+    sniff(prn=packetCallback, store=False)
+  except KeyboardInterrupt:
+    print(Fore.CYAN + "\n[INFO] IDS Stopped"+ Style.RESET_ALL)
+
+
+# Run IDS
+if __name__ == "__main__":
+  main()
