@@ -91,3 +91,15 @@ def detectUdpFlood(pkt):
       logAlert(f"UDP flood detected from {srcIP} ({location})")
       blockIP(srcIP)
   
+# Detect ICMP (ping) flood attacks
+# counts ICMP packets per IP within Time window seconds
+def detectIcmpFlood(pkt):
+  if pkt.haslayer(ICMP):
+    srcIP = pkt[IP].src
+    now = time.time()
+    icmpCounter.setdefault(srcIP, []).append(now)
+    icmpCounter[srcIP] = [t for t in icmpCounter[srcIP] if now - t <= TIME_WINDOW]
+    if len(icmpCounter[srcIP]) > ICMP_THRESHOLD:
+      location = getGeolocation(srcIP)
+      logAlert(f"ICMP flood detected from {srcIP} ({location})")
+      blockIP(srcIP) 
