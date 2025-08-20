@@ -2,7 +2,7 @@ import time
 import requests
 import subprocess
 from scapy.all import sniff, IP, TCP, UDP, ICMP
-from colorama import Forze, Style, init # get colored terminal messages
+from colorama import Fore, Style, init # get colored terminal messages
 
 # initialize colorama
 init(autoreset=True)
@@ -24,5 +24,15 @@ icmpCounter = {} #stores timestamps of ICMP packets per ip
 portScanCounter = {} # stores port access times per ip
 blockedIPS = set() # set to track already blocked IPS
 
+# Helper functions
 
+# Log alert message to both terminal and file
+# use red color for terminal alerts
+def logAlert(message):
+  timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+  # append alert to log file
+  with open(ALERT_LOG_FILE, "a") as f:
+    f.write(f"{timestamp} - {message}\n")
+  #print red colored alert to reminal
+  print(Fore.RED + f"[ALERT] {message}" + Style.RESET_ALL)
 
