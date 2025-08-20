@@ -4,6 +4,9 @@ Terminal IDS is an advanced Python-based Intrusion Detection System (IDS) that m
 
 This tool is useful for cybersecurity professionals, network administrators, and students to understand network threats and experiment with real-time detection.
 
+Must be run in linux
+
+
 ## Features:
 - Detects SYN flood attacks: multiple TCP SYN packets from a single IP in a short time.
 - Detects UDP flood attacks: large numbers of UDP packets from a single IP.
@@ -42,4 +45,34 @@ This tool is useful for cybersecurity professionals, network administrators, and
 
 ## Installation:
 
+1. **Requirements:**
+   - Python 3.x
+   - `scapy` library for packet sniffing
+   - `requests` library for geolocation API
+   - `colorama` library for colored terminal output
+   - Linux system with `iptables` (for automatic IP blocking)
+   - Internet connection (for geolocation lookup)
+
+2. **Install Python dependencies:**
+```bash
+pip install scapy requests colorama
+
+```
+3. **Clone or download the Terminal IDS script to your local machine.**
+4. **Ensure the script has execute permissions:**
+```bash
+chmod +x terminal_ids.py
+```
+
 ## Usage:
+**Start the IDS**
+```bash
+sudo python3 IDS.py
+```
+
+The terminal will display:
+- [INFO] messages in yellow/cyan
+- [ALERT] messages in red for detected attacks
+- Alerts are also logged to ids_alerts.log in the same directory.
+- The IDS will automatically block malicious IPs using iptables.
+- To stop monitoring, press Ctrl+C.
