@@ -103,3 +103,17 @@ def detectIcmpFlood(pkt):
       location = getGeolocation(srcIP)
       logAlert(f"ICMP flood detected from {srcIP} ({location})")
       blockIP(srcIP) 
+
+# Detect port scanning activity
+# Tracks distinct ports accessed by an ip within time window
+def detectPortScan(pkt):
+  if pkt.haslayer(TCP) or pkt.haslayer(UDP):
+    srcIP = pkt[IP].src
+    dstPort = pkt[TCP].dport if pkt.haslayer(TCP) else pkt[UDP].dport
+    now = time.time()
+    # track the last access time per port
+    portScanCounter[srcIP] = {port: t for port, t in portScanCounter[srcIP].items() if now - t <= TIME_WINDOW}
+    if len(portScanCounter[srcIP])> PORT_SCAN_THRESHOLD:
+      location = getGeolocation(srcIP)
+      logAlert(f"Port scan detected from {srcIP} ({location})")
+      blockIP(srcIP) 
