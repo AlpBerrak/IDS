@@ -45,6 +45,11 @@ def blockIP(ip):
     # Add DROP rule to iptables for this IP
     subprocess.run(["sudo","iptables","-A","INPUT","-s",ip,"-j","DROP"])
     blockedIPS.add(ip)
+    # Clear counters
+    synCounter.pop(ip, None)
+    udpCounter.pop(ip, None)
+    icmpCounter.pop(ip, None)
+    portScanCounter.pop(ip, None)
     print(Fore.YELLOW + f"[INFO] Blocked IP {ip}" + Style.RESET_ALL)  
   except Exception as e:
     print(Fore.MAGENTA + f"[WARN] Could not block IP {ip}: {e}" + Style.RESET_ALL)
