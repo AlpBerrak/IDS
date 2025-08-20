@@ -79,3 +79,15 @@ def detectSynFlood(pkt):
       logAlert(f"SYN flood detected from {srcIP} ({location})")
       blockIP(srcIP)
       
+# Detect UDP flood attacks
+def detectUdpFlood(pkt):
+  if pkt.haslayer(UDP):
+    srcIP = pkt[IP].src
+    now = time.time()
+    udpCounter.setdefault(srcIP,[]).append(now)
+    udpCounter[srcIP] = [t for t in udpCounter[srcIP] if now - t <= TIME_WINDOW]
+    if len(udpCounter[srcIP]) > UDP_THRESHOLD:
+      location = getGeolocation(srcIP)
+      logAlert(f"UDP flood detected from {srcIP} ({location})")
+      blockIP(srcIP)
+  
