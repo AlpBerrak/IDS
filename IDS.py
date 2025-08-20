@@ -36,3 +36,15 @@ def logAlert(message):
   #print red colored alert to reminal
   print(Fore.RED + f"[ALERT] {message}" + Style.RESET_ALL)
 
+# Block a malicious IP using iptables
+# Avoid blocking the same IP multiple times
+def blockIP(ip):
+  if ip in blockedIPS:
+    return
+  try:
+    # Add DROP rule to iptables for this IP
+    subprocess.run(["sudo","iptables","-A","INPUT","-s",ip,"-j","DROP"])
+    blockedIPS.add(ip)
+    print(Fore.YELLOW + f"[INFO] Blocked IP {ip}" + Style.RESET_ALL)  
+  except Exception as e:
+    print(Fore.MAGENTA + f"[WARN] Could not block IP {ip}: {e}" + Style.RESET_ALL)
