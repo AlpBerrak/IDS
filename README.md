@@ -61,7 +61,7 @@ pip install scapy requests colorama
 3. **Clone or download the Terminal IDS script to your local machine.**
 4. **Ensure the script has execute permissions:**
 ```bash
-chmod +x terminal_ids.py
+chmod +x IDS.py
 ```
 
 ## Usage:
