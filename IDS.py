@@ -24,6 +24,15 @@ icmpCounter = {} #stores timestamps of ICMP packets per ip
 portScanCounter = {} # stores port access times per ip
 blockedIPS = set() # set to track already blocked IPS
 
+# Sets to alert only once per IP per attack type ---
+synAlerted = set()
+udpAlerted = set()
+icmpAlerted = set()
+portScanAlerted = set()
+
+# Cache geolocation to reduce HTTP requests ---
+geoCache = {}
+
 # Helper functions
 
 # Log alert message to both terminal and file
@@ -57,6 +66,8 @@ def blockIP(ip):
 # Get geolocation of an IP using ipinfo.io API
 # Returns city and country if possible
 def getGeolocation(ip):
+  if ip in geoCache:
+    return geoCache[ip]
   try: 
     response = requests.get(f"https://ipinfo.io/{ip}/json")
     data = response.json()
