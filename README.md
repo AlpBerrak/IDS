@@ -15,6 +15,7 @@ Must be run in linux
 - Logs alerts to a file (ids_alerts.log).
 - Color-coded terminal alerts for better readability.
 - Automatically blocks attacking IPs using iptables.
+   - This is only a feature in real linux kernels. in WSL the program will simulate blocking an IP address
 - Retrieves geolocation information of suspicious IPs (city and country).
 - Easy to customize thresholds and time windows for different attack types.
 
@@ -76,3 +77,69 @@ The terminal will display:
 - Alerts are also logged to ids_alerts.log in the same directory.
 - The IDS will automatically block malicious IPs using iptables.
 - To stop monitoring, press Ctrl+C.
+
+# IDS Testing Examples (WSL)
+
+This document lists safe, repeatable tests you can run in **WSL** to verify that your IDS correctly detects attacks without spamming or crashing.  
+All tests assume the IDS is running with:
+
+```bash
+sudo python3 IDS.py
+```
+## 1. SYN Flood Detection
+
+Goal: Trigger the SYN flood threshold.
+
+Install tool:
+```sudo apt install hping3 -y```
+
+Run test:
+```sudo hping3 -S -p 80 -i u1000 127.0.0.1```
+
+Expected Output:
+- [ALERT] SYN flood detected from 127.0.0.1 (Unknown, Unknown)
+- [INFO] Blocked IP 127.0.0.1 (simulated)
+
+---
+
+## 2. UDP Flood Detection
+
+Goal: Trigger UDP packet rate threshold.
+
+Run test:
+```sudo hping3 --udp -p 53 -i u1000 127.0.0.1```
+
+Expected Output:
+- [ALERT] UDP flood detected from 127.0.0.1 (Unknown, Unknown)
+- [INFO] Blocked IP 127.0.0.1 (simulated)
+
+---
+
+## 3. ICMP (Ping) Flood Detection
+
+Goal: Trigger ICMP flood logic.
+
+Run test:
+```sudo ping -f 127.0.0.1```
+
+Stop with Ctrl+C once alert fires.
+
+Expected Output:
+- [ALERT] ICMP flood detected from 127.0.0.1 (Unknown, Unknown)
+- [INFO] Blocked IP 127.0.0.1 (simulated)
+
+---
+
+## 4. Port Scan Detection
+
+Goal: Detect rapid access to many distinct ports.
+
+Install tool:
+```sudo apt install nmap -y```
+
+Run test:
+```sudo nmap -p 20-30 127.0.0.1```
+
+Expected Output:
+- [ALERT] Port scan detected from 127.0.0.1 (Unknown, Unknown)
+- [INFO] Blocked IP 127.0.0.1 (simulated)
