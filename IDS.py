@@ -52,7 +52,7 @@ def blockIP(ip):
     return
   try:
     # Add DROP rule to iptables for this IP
-    subprocess.run(["sudo","iptables","-A","INPUT","-s",ip,"-j","DROP"])
+    subprocess.run(["sudo","iptables","-A","INPUT","-s",ip,"-j","DROP"]) # might not work in WSL
     blockedIPS.add(ip)
     # Clear counters
     synCounter.pop(ip, None)
@@ -88,11 +88,14 @@ def detectSynFlood(pkt):
     srcIP = pkt[IP].src
     now = time.time()
     synCounter.setdefault(srcIP, []).append(now)
-    # remove timestamps older than timewindow
+    # remove timestamps older than time window
     synCounter[srcIP] = [t for t in synCounter[srcIP] if now - t <= TIME_WINDOW]
-    if len(synCounter[srcIP]) > SYN_THRESHOLD:
+
+    # ALERT ONCE PER IP
+    if len(synCounter[srcIP]) > SYN_THRESHOLD and srcIP not in synAlerted:
       location = getGeolocation(srcIP)
       logAlert(f"SYN flood detected from {srcIP} ({location})")
+      synAlerted.add(srcIP)
       blockIP(srcIP)
       
 # Detect UDP flood attacks
@@ -100,12 +103,15 @@ def detectUdpFlood(pkt):
   if pkt.haslayer(UDP):
     srcIP = pkt[IP].src
     now = time.time()
-    udpCounter.setdefault(srcIP,[]).append(now)
+    udpCounter.setdefault(srcIP, []).append(now)
     udpCounter[srcIP] = [t for t in udpCounter[srcIP] if now - t <= TIME_WINDOW]
-    if len(udpCounter[srcIP]) > UDP_THRESHOLD:
+
+    if len(udpCounter[srcIP]) > UDP_THRESHOLD and srcIP not in udpAlerted:
       location = getGeolocation(srcIP)
       logAlert(f"UDP flood detected from {srcIP} ({location})")
+      udpAlerted.add(srcIP)
       blockIP(srcIP)
+
   
 # Detect ICMP (ping) flood attacks
 # counts ICMP packets per IP within Time window seconds
@@ -115,10 +121,11 @@ def detectIcmpFlood(pkt):
     now = time.time()
     icmpCounter.setdefault(srcIP, []).append(now)
     icmpCounter[srcIP] = [t for t in icmpCounter[srcIP] if now - t <= TIME_WINDOW]
-    if len(icmpCounter[srcIP]) > ICMP_THRESHOLD:
+    if len(icmpCounter[srcIP]) > ICMP_THRESHOLD and srcIP not in icmpAlerted:
       location = getGeolocation(srcIP)
       logAlert(f"ICMP flood detected from {srcIP} ({location})")
-      blockIP(srcIP) 
+      icmpAlerted.add(srcIP)
+      blockIP(srcIP)
 
 # Detect port scanning activity
 # Tracks distinct ports accessed by an ip within time window
@@ -128,13 +135,15 @@ def detectPortScan(pkt):
     dstPort = pkt[TCP].dport if pkt.haslayer(TCP) else pkt[UDP].dport
     now = time.time()
     portScanCounter.setdefault(srcIP, {})
-    portScanCounter[srcIP][dstPort] = now   
-    # track the last access time per port
+    portScanCounter[srcIP][dstPort] = now
     portScanCounter[srcIP] = {port: t for port, t in portScanCounter[srcIP].items() if now - t <= TIME_WINDOW}
-    if len(portScanCounter[srcIP])> PORT_SCAN_THRESHOLD:
+
+    if len(portScanCounter[srcIP]) > PORT_SCAN_THRESHOLD and srcIP not in portScanAlerted:
       location = getGeolocation(srcIP)
       logAlert(f"Port scan detected from {srcIP} ({location})")
-      blockIP(srcIP) 
+      portScanAlerted.add(srcIP)
+      blockIP(srcIP)
+
       
       
       
